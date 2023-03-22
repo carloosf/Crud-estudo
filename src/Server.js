@@ -27,22 +27,18 @@ connection.connect((err) => {
 
 app.get('/registros', (req, res) => {
     connection.query('SELECT * FROM users', (err, rows) => {
-        if (err) {
-            console.error('Erro ao usar o SELECT' + err.stack);
-        }
+        if (err) throw err
         res.send(rows)
     })
-    console.log(req.body);
 })
 
 app.post('/registros', (req, res) => {
     const { campo1, campo2, campo3 } = req.body
-    connection.query('INSERT INTO users (name, email, senha) VALUES (?, ?, ?)', [campo1, campo2, campo3], (err, result) => {
-        if (err) {
-            console.error('Erro ao usar o INSERT' + err.stack);
-        }
+    connection.query('INSERT INTO users (name, email, senha) VALUES (?, ?, ?)', [campo1, campo2, campo3,], (err, result) => {
+        if (err) throw err
         res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
     })
+    console.log(req.body);
 })
 
 
