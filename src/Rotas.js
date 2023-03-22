@@ -22,14 +22,14 @@ connection.connect((err) => {
     console.log('Conexão com banco realizada!');
 })
 
-rotas.get('/registros', (req, res) => {
+rotas.get('/links:id', (req, res) => {
     connection.query('SELECT * FROM users', (err, rows) => {
         if (err) throw err
         res.send(rows)
     })
 })
 
-rotas.post('/registros', (req, res) => {
+rotas.post('/cadastro', (req, res) => {
     const { name, email, password } = req.body
     connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
@@ -47,4 +47,26 @@ rotas.post('/registros', (req, res) => {
     })
 })
 
+rotas.post('/login', (req, res) => {
+    const { email, password } = req.body
+    connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, rows) => {
+        if (err) throw err
+
+        if (rows.length === 0) {
+            console.log("as Credenciais fornecidas nao sao validas")
+            res.status(401).send(`o email ou senha nao esta valido`)
+            return
+        }        
+        res.status(200).send("Login realizado")
+    })
+})
+
+
+const query = connection.query
+('SELECT users.name, links.link, links.namelink FROM links left join users on (links.id = users.id)', (err, rows) => {
+    if (err) throw err 
+    console.log(rows)
+})
+
 module.exports = rotas
+
