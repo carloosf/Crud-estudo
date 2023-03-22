@@ -47,8 +47,9 @@ rotas.post('/cadastro', (req, res) => {
                 if (err) throw err
                 res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
             })
-        })
 
+           
+        })
     })
 })
 
@@ -71,19 +72,11 @@ rotas.post('/login', (req, res) => {
                 return
             }
         })
-
+        const token = jwt.sign({ id: rows[0].id}, process.env.SECRET_ENV, {expiresIn : '1h'})
         res.status(200).send("Login realizado")
         console.log("Login realizado")
-
     })
 })
-
-
-const query = connection.query
-    ('SELECT users.name, links.link, links.namelink FROM links left join users on (links.id = users.id)', (err, rows) => {
-        if (err) throw err
-        console.log(rows)
-    })
 
 module.exports = rotas
 
