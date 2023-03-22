@@ -5,6 +5,7 @@ const express = require("express")
 const mysql = require("mysql2")
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken")  
 
 //Cria uma variavel com o express
 const rotas = express.Router()
@@ -72,11 +73,13 @@ rotas.post('/login', (req, res) => {
                 return
             }
         })
-        const token = jwt.sign({ id: rows[0].id}, process.env.SECRET_ENV, {expiresIn : '1h'})
-        res.status(200).send("Login realizado")
+        const token = jwt.sign({ id: rows[0].id}, process.env.SECRET_KEY, {expiresIn : '1h'})
         console.log("Login realizado")
+        res.redirect(`/perfil/${rows[0].id}`)
     })
 })
+
+rotas.get()
 
 module.exports = rotas
 
