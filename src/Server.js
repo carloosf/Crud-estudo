@@ -1,17 +1,13 @@
 //Importa todos os componentes
 const express = require("express")
 const mysql = require("mysql")
-const cors = require("cors")
-const bodyParser = require("body-parser")
+const bodyParser = require('body-parser')
 
 //Cria uma variavel com o express
 const app = express()
 
-//Usa o bodyParser para usar arquivos json
 app.use(bodyParser.json())
-
-//Usa o cors para poder permitir outras requisições
-app.use(cors())
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //Conecta com o banco de dados
 const connection = mysql.createConnection({
@@ -28,6 +24,27 @@ connection.connect((err) => {
     }
     console.log('Conexão realizada com sucesso!');
 })
+
+app.get('/registros', (req, res) => {
+    connection.query('SELECT * FROM users', (err, rows) => {
+        if (err) {
+            console.error('Erro ao usar o SELECT' + err.stack);
+        }
+        res.send(rows)
+    })
+    console.log(req.body);
+})
+
+app.post('/registros', (req, res) => {
+    const { campo1, campo2, campo3 } = req.body
+    connection.query('INSERT INTO users (name, email, senha) VALUES (?, ?, ?)', [campo1, campo2, campo3], (err, result) => {
+        if (err) {
+            console.error('Erro ao usar o INSERT' + err.stack);
+        }
+        res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
+    })
+})
+
 
 app.listen(3000, () => {
     console.log('Servidor iniciando na porta 3000');
