@@ -9,5 +9,5 @@ app.get("/health", (req, res) => {
     return res.json("up")
 })
 
-const port = 3323
+const port = 3333
 app.listen(port, () => console.log(`Servidor conectado na rota: ${port}`))

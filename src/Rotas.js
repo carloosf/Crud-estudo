@@ -31,9 +31,19 @@ rotas.get('/registros', (req, res) => {
 
 rotas.post('/registros', (req, res) => {
     const { name, email, password } = req.body
-    connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, password], (err, result) => { 
+    connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
-        res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
+
+        if (rows.length > 0) {
+            console.log(`O email ${email} já esta em uso.`)
+            res.status(409).send(`ò email ${email} já esta em uso.`)
+            return
+        }
+
+        connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, password], (err, result) => {
+            if (err) throw err
+            res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
+        })
     })
 })
 
