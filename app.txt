@@ -1,0 +1,13 @@
+//importa tudo
+
+//cria uma variavel com o express
+
+// Configuração do bodyParser para interpretar dados em JSON
+
+// Configuração do cors para permitir requisições de outros domínios
+
+// Configuração da conexão com o banco de dados
+
+// Mensagem de erro e de sucesso
+
+// Inicia o servidor na porta 3000
