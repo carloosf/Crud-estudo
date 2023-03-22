@@ -1,4 +1,6 @@
 //Importa todos os componentes
+require('dotenv').config()
+
 const express = require("express")
 const mysql = require("mysql")
 const bodyParser = require('body-parser')
@@ -10,12 +12,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //Conecta com o banco de dados
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'userlink',
-})
+const connection = mysql.createConnection(process.env.DATABASE_URL)
 
 connection.connect((err) => {
     if (err) {
@@ -42,6 +39,7 @@ app.post('/registros', (req, res) => {
 })
 
 
+connection.end()
 app.listen(3000, () => {
     console.log('Servidor iniciando na porta 3000');
 })
