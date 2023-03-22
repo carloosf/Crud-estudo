@@ -16,8 +16,8 @@ app.use(cors())
 //Conecta com o banco de dados
 const connection = mysql.createConnection({
     host: 'localhost',
-    user: 'admin',
-    password: 'admin',
+    user: 'root',
+    password: 'root',
     database: 'userlink',
 })
 
