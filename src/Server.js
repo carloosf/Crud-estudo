@@ -33,8 +33,8 @@ app.get('/registros', (req, res) => {
 })
 
 app.post('/registros', (req, res) => {
-    const { campo1, campo2, campo3 } = req.body
-    connection.query('INSERT INTO users (name, email, senha) VALUES (?, ?, ?)', [campo1, campo2, campo3,], (err, result) => {
+    const { name, email, senha } = req.body
+    connection.query('INSERT INTO users (name, email, senha) VALUES (?, ?, ?)', [name, email, senha], (err, result) => {
         if (err) throw err
         res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
     })
