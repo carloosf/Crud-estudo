@@ -2,7 +2,7 @@
 require('dotenv').config()
 
 const express = require("express")
-const mysql = require("mysql")
+const mysql = require("mysql2")
 const bodyParser = require('body-parser')
 
 //Cria uma variavel com o express
@@ -30,8 +30,8 @@ app.get('/registros', (req, res) => {
 })
 
 app.post('/registros', (req, res) => {
-    const { name, email, senha } = req.body
-    connection.query('INSERT INTO users (name, email, senha) VALUES (?, ?, ?)', [name, email, senha], (err, result) => {
+    const { name, email, password } = req.body
+    connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, password], (err, result) => { 
         if (err) throw err
         res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
     })
@@ -39,7 +39,6 @@ app.post('/registros', (req, res) => {
 })
 
 
-connection.end()
 app.listen(3000, () => {
     console.log('Servidor iniciando na porta 3000');
 })
