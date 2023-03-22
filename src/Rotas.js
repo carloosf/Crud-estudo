@@ -4,6 +4,7 @@ require('dotenv').config()
 const express = require("express")
 const mysql = require("mysql2")
 const bodyParser = require('body-parser')
+const bcrypt = require('bcrypt')
 
 //Cria uma variavel com o express
 const rotas = express.Router()
@@ -40,33 +41,49 @@ rotas.post('/cadastro', (req, res) => {
             return
         }
 
-        connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, password], (err, result) => {
+        bcrypt.hash(password, 10, (err, hash) => {
             if (err) throw err
-            res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
+            connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hash], (err, result) => {
+                if (err) throw err
+                res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
+            })
         })
+
     })
 })
 
 rotas.post('/login', (req, res) => {
     const { email, password } = req.body
-    connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, rows) => {
+    connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
 
         if (rows.length === 0) {
             console.log("as Credenciais fornecidas nao sao validas")
             res.status(401).send(`o email ou senha nao esta valido`)
             return
-        }        
+        }
+
+        bcrypt.compare(password, rows[0].password, (err, result) => {
+            if (err) throw err
+            if (result === false) {
+                console.log("as Credenciais fornecidas nao sao validas")
+                res.status(401).send(`o email ou senha nao esta valido`)
+                return
+            }
+        })
+
         res.status(200).send("Login realizado")
+        console.log("Login realizado")
+
     })
 })
 
 
 const query = connection.query
-('SELECT users.name, links.link, links.namelink FROM links left join users on (links.id = users.id)', (err, rows) => {
-    if (err) throw err 
-    console.log(rows)
-})
+    ('SELECT users.name, links.link, links.namelink FROM links left join users on (links.id = users.id)', (err, rows) => {
+        if (err) throw err
+        console.log(rows)
+    })
 
 module.exports = rotas
 
