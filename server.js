@@ -1,5 +1,5 @@
 const express = require("express")
-const rotas = require("./Rotas")
+const rotas = require("./src/routes")
 const app = express()
 
 app.use(express.json())

@@ -8,10 +8,10 @@ const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")  
 
 //Cria uma variavel com o express
-const rotas = express.Router()
+const router = express.Router()
 
-rotas.use(bodyParser.json())
-rotas.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json())
+router.use(bodyParser.urlencoded({ extended: true }));
 
 //Conecta com o banco de dados
 const connection = mysql.createConnection(process.env.DATABASE_URL)
@@ -24,14 +24,15 @@ connection.connect((err) => {
     console.log('Conexão com banco realizada!');
 })
 
-rotas.get('/links:id', (req, res) => {
+router.get('/links:id', (req, res) => {
     connection.query('SELECT * FROM users', (err, rows) => {
         if (err) throw err
         res.send(rows)
     })
 })
 
-rotas.post('/cadastro', (req, res) => {
+//Cadastro de usuario
+router.post('/cadastro', (req, res) => {
     const { name, email, password } = req.body
     connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
@@ -48,13 +49,12 @@ rotas.post('/cadastro', (req, res) => {
                 if (err) throw err
                 res.send(`Registro Criado com sucesso! ID: ${result.insertId}`)
             })
-
-           
         })
     })
 })
 
-rotas.post('/login', (req, res) => {
+//Login
+router.post('/login', (req, res) => {
     const { email, password } = req.body
     connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
@@ -79,7 +79,32 @@ rotas.post('/login', (req, res) => {
     })
 })
 
-rotas.get()
+//Usuario adicionar link a si msm
+router.post('/:user_id/edit', (req, res) => {
+    const user_id = req.params.user_id
+    const { namelink, link } = req.body
 
-module.exports = rotas
+    //Verificar se existe o usuario
+    connection.query('SELECT id FROM users WHERE id = ?', user_id, (err, result) => {
+        if (err) {
+            console.error(err)
+            res.status(500).send('Erro ao verificar o usuario')
+        } else if (result.length === 0) {
+            console.log('Usuario nao existe');
+            res.status(404).send('Usuario nao existe')
+        } else {
+            connection.query('insert into links (namelink, link, user_id) value(?, ?, ?)', [namelink, link, user_id], (err, result) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('Erro ao adicionar o link')
+                } else {
+                    res.status(201).send('Link adicionado com sucesso')
+                }
+            })
+        }
+
+    })
+})
+
+module.exports = router
 
