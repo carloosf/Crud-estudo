@@ -5,7 +5,7 @@ const express = require("express")
 const mysql = require("mysql2")
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt')
-const jwt = require("jsonwebtoken")  
+const jwt = require("jsonwebtoken")
 
 //Cria uma variavel com o express
 const router = express.Router()
@@ -36,13 +36,11 @@ router.post('/cadastro', (req, res) => {
     const { name, email, password } = req.body
     connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
-
         if (rows.length > 0) {
             console.log(`O email ${email} já esta em uso.`)
             res.status(409).send(`ò email ${email} já esta em uso.`)
             return
         }
-
         bcrypt.hash(password, 10, (err, hash) => {
             if (err) throw err
             connection.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [name, email, hash], (err, result) => {
@@ -58,13 +56,11 @@ router.post('/login', (req, res) => {
     const { email, password } = req.body
     connection.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
         if (err) throw err
-
         if (rows.length === 0) {
             console.log("as Credenciais fornecidas nao sao validas")
             res.status(401).send(`o email ou senha nao esta valido`)
             return
         }
-
         bcrypt.compare(password, rows[0].password, (err, result) => {
             if (err) throw err
             if (result === false) {
@@ -73,7 +69,7 @@ router.post('/login', (req, res) => {
                 return
             }
         })
-        const token = jwt.sign({ id: rows[0].id}, process.env.SECRET_KEY, {expiresIn : '1h'})
+        const token = jwt.sign({ id: rows[0].id }, process.env.SECRET_KEY, { expiresIn: '1h' })
         console.log("Login realizado")
         res.status(200).send('Login realizado com sucesso')
     })
