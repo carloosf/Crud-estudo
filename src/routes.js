@@ -75,7 +75,7 @@ router.post('/login', (req, res) => {
         })
         const token = jwt.sign({ id: rows[0].id}, process.env.SECRET_KEY, {expiresIn : '1h'})
         console.log("Login realizado")
-        res.redirect(`/perfil/${rows[0].id}`)
+        res.status(200).send('Login realizado com sucesso')
     })
 })
 
@@ -102,7 +102,6 @@ router.post('/:user_id/edit', (req, res) => {
                 }
             })
         }
-
     })
 })
 
